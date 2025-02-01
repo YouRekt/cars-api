@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "administrators", uniqueConstraints = {
         @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
 })
 public class Administrator {
 
@@ -15,9 +14,6 @@ public class Administrator {
 
     @Column
     private String username;
-
-    @Column
-    private String email;
 
     @Column
     private String passwordHash;
@@ -36,14 +32,6 @@ public class Administrator {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPasswordHash() {
