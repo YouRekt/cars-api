@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequestMapping("/administrator")
 public class AdministratorController {
 
-    private Logger logger = LoggerFactory.getLogger(AdministratorController.class);
+    private final Logger logger = LoggerFactory.getLogger(AdministratorController.class);
 
     private final AdministratorService administratorService;
 
