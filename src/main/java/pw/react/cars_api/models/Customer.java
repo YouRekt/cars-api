@@ -3,7 +3,9 @@ package pw.react.cars_api.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "customers")
+@Table(name = "customers", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")
+})
 public class Customer {
 
     @Id
@@ -11,13 +13,10 @@ public class Customer {
     private String id;
 
     @Column
-    private String username;
-
-    @Column
     private String email;
 
     @Column
-    private String passwordHash;
+    private Boolean external;
 
     public String getId() {
         return id;
@@ -25,14 +24,6 @@ public class Customer {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
@@ -43,11 +34,11 @@ public class Customer {
         this.email = email;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public Boolean getExternal() {
+        return external;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setExternal(Boolean external) {
+        this.external = external;
     }
 }

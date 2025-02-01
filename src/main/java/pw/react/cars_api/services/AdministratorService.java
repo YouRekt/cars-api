@@ -7,7 +7,6 @@ import pw.react.cars_api.data_transfer_objects.AdministratorDTO;
 import pw.react.cars_api.models.Administrator;
 import pw.react.cars_api.repositories.AdministratorRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,15 +23,14 @@ public class AdministratorService {
     @Transactional
     public String registerAdministrator(AdministratorDTO administratorDTO) {
 
-        if (administratorRepository.existsByEmailOrUsername(administratorDTO.email(), administratorDTO.username())) {
-            throw new IllegalArgumentException("Email or username already exists");
+        if (administratorRepository.existsByUsername(administratorDTO.username())) {
+            throw new IllegalArgumentException("Username already exists");
         }
 
         String hashedPassword = passwordEncoder.encode(administratorDTO.password());
 
         Administrator administrator = new Administrator();
         administrator.setUsername(administratorDTO.username());
-        administrator.setEmail(administratorDTO.email());
         administrator.setPasswordHash(hashedPassword);
 
         administratorRepository.save(administrator);
@@ -40,21 +38,21 @@ public class AdministratorService {
         return administrator.getId();
     }
 
+    @Transactional
     public String loginAdministrator(AdministratorDTO administratorDTO) {
 
-        List<Administrator> administrators = administratorRepository.findByEmailOrUsername(administratorDTO.email(), administratorDTO.username());
+        Optional<Administrator> administrator = administratorRepository.findByUsername(administratorDTO.username());
 
-        if (administrators.isEmpty()) {
-            throw new IllegalArgumentException("Email or username already exists");
+        if (administrator.isEmpty()) {
+            throw new IllegalArgumentException("Username already exists");
         }
 
-        Administrator administrator = administrators.getFirst();
 
-        if(!passwordEncoder.matches(administratorDTO.password(), administrator.getPasswordHash())) {
+        if(!passwordEncoder.matches(administratorDTO.password(), administrator.get().getPasswordHash())) {
             throw new IllegalArgumentException("Invalid password");
         }
 
-        return administrator.getId();
+        return administrator.get().getId();
     }
 
     public Optional<Administrator> getAdministratorById(String id) {
