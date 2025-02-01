@@ -10,7 +10,7 @@ public class FuelType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String type;
 
     public Long getId() {

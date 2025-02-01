@@ -16,24 +16,24 @@ public class Model {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column
-    private Integer productionYear;
+    private Long productionYear;
 
     @ManyToOne
     @JoinColumn(name = "fuel_type_id")
     private FuelType fuelType;
 
     @Column
-    private int fuelCapacity;
+    private Long fuelCapacity;
 
     @Column
-    private int seatCount;
+    private Long seatCount;
 
     @Column
-    private int doorCount;
+    private Long doorCount;
 
     @Column
     private BigDecimal dailyRate;
@@ -62,11 +62,11 @@ public class Model {
         this.name = name;
     }
 
-    public int getProductionYear() {
+    public Long getProductionYear() {
         return productionYear;
     }
 
-    public void setProductionYear(int productionYear) {
+    public void setProductionYear(Long productionYear) {
         this.productionYear = productionYear;
     }
 
@@ -78,27 +78,27 @@ public class Model {
         this.fuelType = fuelType;
     }
 
-    public int getFuelCapacity() {
+    public Long getFuelCapacity() {
         return fuelCapacity;
     }
 
-    public void setFuelCapacity(int fuelCapacity) {
+    public void setFuelCapacity(Long fuelCapacity) {
         this.fuelCapacity = fuelCapacity;
     }
 
-    public int getSeatCount() {
+    public Long getSeatCount() {
         return seatCount;
     }
 
-    public void setSeatCount(int seatCount) {
+    public void setSeatCount(Long seatCount) {
         this.seatCount = seatCount;
     }
 
-    public int getDoorCount() {
+    public Long getDoorCount() {
         return doorCount;
     }
 
-    public void setDoorCount(int doorCount) {
+    public void setDoorCount(Long doorCount) {
         this.doorCount = doorCount;
     }
 

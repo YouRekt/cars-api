@@ -1,7 +1,6 @@
 package pw.react.cars_api.models;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Formula;
 import org.locationtech.jts.geom.Point;
 
 @Entity
@@ -25,11 +24,7 @@ public class Location {
     private String street;
 
     @Column
-    private Integer houseNumber;
-
-    @Formula("concat(street, ' ', house_number, ', ', postal_code, ' ', city, ', ', country)")
-    @Column(insertable = false, updatable = false)
-    private String fullAddress;
+    private Long houseNumber;
 
     @Column
     private Point coordinates;
@@ -74,16 +69,16 @@ public class Location {
         this.street = street;
     }
 
-    public int getHouseNumber() {
+    public Long getHouseNumber() {
         return houseNumber;
     }
 
-    public void setHouseNumber(int houseNumber) {
+    public void setHouseNumber(Long houseNumber) {
         this.houseNumber = houseNumber;
     }
 
     public String getFullAddress() {
-        return fullAddress;
+        return String.format("%s %d, %s %s, %s", street, houseNumber, postalCode, city, country);
     }
 
     public Point getCoordinates() {
