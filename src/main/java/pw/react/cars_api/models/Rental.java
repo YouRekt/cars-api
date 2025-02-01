@@ -34,7 +34,7 @@ public class Rental {
 
     @Formula("timestampdiff(HOUR,`end_at`,`start_at`) / 24")
     @Column(insertable = true,updatable = false)
-    private int daysRented;
+    private Integer daysRented;
 
     public String getId() {
         return id;

@@ -20,7 +20,7 @@ public class Model {
     private String name;
 
     @Column
-    private int productionYear;
+    private Integer productionYear;
 
     @ManyToOne
     @JoinColumn(name = "fuel_type_id")

@@ -25,7 +25,7 @@ public class Location {
     private String street;
 
     @Column
-    private int houseNumber;
+    private Integer houseNumber;
 
     @Formula("concat(street, ' ', house_number, ', ', postal_code, ' ', city, ', ', country)")
     @Column(insertable = false, updatable = false)
