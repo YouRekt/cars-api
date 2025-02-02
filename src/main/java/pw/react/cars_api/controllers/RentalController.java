@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import pw.react.cars_api.data_transfer_objects.RentalDTO;
 import pw.react.cars_api.models.Rental;
 import pw.react.cars_api.services.RentalService;
+import pw.react.cars_api.utils.UnauthorizedRequestException;
 
 import java.net.URI;
 
 @RestController
-@RequestMapping("/rental")
+@RequestMapping("/rentals")
 public class RentalController {
 
     private final RentalService rentalService;
@@ -30,9 +31,12 @@ public class RentalController {
     public ResponseEntity<Void> createRental(@Valid @RequestBody RentalDTO rentalDTO, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         try {
             Rental rental = rentalService.createRental(rentalDTO, authorization);
-            URI location = URI.create("/rental/" + rental.getId());
+            URI location = URI.create("/rentals/" + rental.getId());
             logger.info("Created rental {}", rentalDTO);
             return ResponseEntity.created(location).build();
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized create rental request {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error creating rental {}", rentalDTO);
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -45,8 +49,10 @@ public class RentalController {
             Rental rental = rentalService.getRental(id, authorization);
             logger.info("Rental with id {} returned", id);
             return ResponseEntity.ok(rental);
-        }
-        catch (Exception e) {
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized get rental request {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
             logger.error("Error getting rental with id {}", id );
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -58,6 +64,9 @@ public class RentalController {
             Page<Rental> rentalPage = rentalService.getRentals(authorization,page,size);
             logger.info("Rental list returned {}", rentalPage);
             return ResponseEntity.ok(rentalPage);
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized get rentals request {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error getting rental list {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
