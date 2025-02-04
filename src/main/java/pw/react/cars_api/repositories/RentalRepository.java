@@ -14,4 +14,5 @@ public interface RentalRepository extends JpaRepository<Rental, String> {
     boolean existsByCarAndStartAtBeforeAndEndAtAfter(Car car, Date startAtBefore, Date endAtAfter);
     Optional<Rental> findByCustomerAndId(Customer customer, String id);
     Page<Rental> findByCustomer(Customer customer, Pageable pageable);
+    boolean existsByIdAndCustomer(String id, Customer customer);
 }
