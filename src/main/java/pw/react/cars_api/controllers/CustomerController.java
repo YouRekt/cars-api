@@ -67,6 +67,7 @@ public class CustomerController {
     public ResponseEntity<Void> loginCustomer(@Valid @RequestBody CustomerDTO customerDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.error("Login Validation Error: {}", bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().build();
         }
         try {
             String email = customerService.login(customerDTO);
@@ -89,6 +90,26 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error getting customers {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> editCustomer(@Valid @RequestBody CustomerDTO customerDTO, @PathVariable String id, BindingResult bindingResult, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        if (bindingResult.hasErrors()) {
+            logger.error("Edit Customer Validation Error: {}", bindingResult.getAllErrors());
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            customerService.editCustomer(customerDTO,id,authorization);
+            URI location = URI.create("/customers/" + id);
+            logger.info("Customer edited with ID: {}", id);
+            return ResponseEntity.created(location).build();
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized edit customer request {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            logger.error("Error editing customer {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
