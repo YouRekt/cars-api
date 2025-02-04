@@ -8,6 +8,7 @@ import pw.react.cars_api.models.Customer;
 import pw.react.cars_api.models.Rental;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public interface RentalRepository extends JpaRepository<Rental, String> {
@@ -15,4 +16,5 @@ public interface RentalRepository extends JpaRepository<Rental, String> {
     Optional<Rental> findByCustomerAndId(Customer customer, String id);
     Page<Rental> findByCustomer(Customer customer, Pageable pageable);
     boolean existsByIdAndCustomer(String id, Customer customer);
+    List<Rental> findAllByCustomer(Customer customer);
 }
