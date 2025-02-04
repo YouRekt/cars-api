@@ -1,5 +1,8 @@
 package pw.react.cars_api.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +16,11 @@ import pw.react.cars_api.repositories.CarRepository;
 import pw.react.cars_api.repositories.ImageRepository;
 import pw.react.cars_api.repositories.LocationRepository;
 import pw.react.cars_api.repositories.ModelRepository;
+import pw.react.cars_api.repositories.*;
+import pw.react.cars_api.utils.Authorization;
 import pw.react.cars_api.utils.Authorization;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,10 +44,20 @@ public class CarService {
         this.auth = auth;
     }
 
-    public List<CarRespDTO> getAllCars() {
-        return carRepository.findAll().stream()
-                .map(CarRespDTO::new)
-                .collect(Collectors.toList());
+    public Page<CarRespDTO> getAllCars(Pageable page) {
+        return carRepository.findAll(page)
+                .map(CarRespDTO::new);
+    }
+
+    public Page<CarRespDTO> searchCars(Optional<String> brandName, Optional<String> modelName,
+                                Optional<Long> productionYear, Optional<String> fuelType,
+                                Optional<Long> fuelCapacity, Optional<Long> seatCount,
+                                Optional<Long> doorCount, Optional<BigDecimal> dailyRate,
+                                Pageable pageable) {
+        Specification<Car> spec = CarSpecifications.filterByModelAttributes(
+                brandName, modelName, productionYear, fuelType, fuelCapacity, seatCount, doorCount, dailyRate);
+        return carRepository.findAll(spec, pageable)
+                .map(CarRespDTO::new);
     }
 
     public Optional<CarRespDTO> getCarById(String id) {

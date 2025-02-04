@@ -1,6 +1,5 @@
 package pw.react.cars_api.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pw.react.cars_api.models.Image;

@@ -2,6 +2,8 @@ package pw.react.cars_api.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 
@@ -19,6 +21,7 @@ public class Rental {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Customer customer;
 
     @Column

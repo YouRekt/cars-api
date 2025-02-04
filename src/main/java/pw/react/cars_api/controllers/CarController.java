@@ -1,5 +1,7 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import pw.react.cars_api.data_transfer_objects.CarReqDTO;
 import pw.react.cars_api.data_transfer_objects.CarRespDTO;
 import pw.react.cars_api.services.CarService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +25,21 @@ public class CarController {
     }
 
     @GetMapping
-    public List<CarRespDTO> getAllCars() {
-        return carService.getAllCars();
+    public Page<CarRespDTO> getAllCars(Pageable page) {
+        return carService.getAllCars(page);
+    }
+
+    @GetMapping("/search")
+    public Page<CarRespDTO> searchCars(@RequestParam Optional<String> brandName,
+                                       @RequestParam Optional<String> modelName,
+                                       @RequestParam Optional<Long> productionYear,
+                                       @RequestParam Optional<String> fuelType,
+                                       @RequestParam Optional<Long> fuelCapacity,
+                                       @RequestParam Optional<Long> seatCount,
+                                       @RequestParam Optional<Long> doorCount,
+                                       @RequestParam Optional<BigDecimal> dailyRate,
+                                       Pageable pageable) {
+        return carService.searchCars(brandName, modelName, productionYear, fuelType, fuelCapacity, seatCount, doorCount, dailyRate, pageable);
     }
 
     @GetMapping("/{id}")
@@ -34,7 +50,7 @@ public class CarController {
     }
 
     @PostMapping
-    public ResponseEntity<CarRespDTO> createCar(@RequestBody CarReqDTO dto, @RequestHeader(name = "X-Auth") String authorization) {
+    public ResponseEntity<CarRespDTO> createCar(@RequestBody CarReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         return ResponseEntity.ok(carService.createCar(dto, authorization));
     }
 
