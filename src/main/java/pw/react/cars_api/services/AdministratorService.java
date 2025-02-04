@@ -48,7 +48,7 @@ public class AdministratorService {
         }
 
 
-        if(!passwordEncoder.matches(administratorDTO.password(), administrator.get().getPasswordHash())) {
+        if (!passwordEncoder.matches(administratorDTO.password(), administrator.get().getPasswordHash())) {
             throw new IllegalArgumentException("Invalid password");
         }
 
@@ -57,5 +57,14 @@ public class AdministratorService {
 
     public Optional<Administrator> getAdministratorById(String id) {
         return administratorRepository.findById(id);
+    }
+
+    @Transactional
+    public void deleteAdministrator(String id) {
+        if (!administratorRepository.existsById(id)) {
+            throw new IllegalArgumentException("Administrator not found");
+        }
+
+        administratorRepository.deleteById(id);
     }
 }

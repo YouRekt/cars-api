@@ -53,7 +53,7 @@ public class RentalController {
             logger.error("Unauthorized get rental request {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            logger.error("Error getting rental with id {}", id );
+            logger.error("Error getting rental with id {}", id);
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
@@ -61,7 +61,7 @@ public class RentalController {
     @GetMapping("/")
     public ResponseEntity<Page<Rental>> getAllRentals(@RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization, @RequestParam("page") int page, @RequestParam("size") int size) {
         try {
-            Page<Rental> rentalPage = rentalService.getRentals(authorization,page,size);
+            Page<Rental> rentalPage = rentalService.getRentals(authorization, page, size);
             logger.info("Rental list returned {}", rentalPage);
             return ResponseEntity.ok(rentalPage);
         } catch (UnauthorizedRequestException e) {
@@ -69,6 +69,21 @@ public class RentalController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error getting rental list {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelRental(@PathVariable("id") String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        try {
+            rentalService.deleteRental(id, authorization);
+            logger.info("Rental with id {} deleted", id);
+            return ResponseEntity.ok().build();
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized cancel rental request {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            logger.error("Error cancelling rental with id {}", id);
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
