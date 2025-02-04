@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,13 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<BrandRespDTO> addBrand(@RequestBody BrandReqDTO dto) {
-        return ResponseEntity.ok(brandService.addBrand(dto));
+    public ResponseEntity<BrandRespDTO> addBrand(@RequestBody BrandReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        return ResponseEntity.ok(brandService.addBrand(dto,authorization));
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<Void> deleteBrandByName(@PathVariable String name) {
-        brandService.deleteBrandByName(name);
+    public ResponseEntity<Void> deleteBrandByName(@PathVariable String name, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        brandService.deleteBrandByName(name,authorization);
         return ResponseEntity.noContent().build();
     }
 }

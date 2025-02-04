@@ -22,6 +22,13 @@ public class Authorization {
         return customerRepository.findByEmail(customerEmail).orElseThrow(() -> new UnauthorizedRequestException("Customer not found"));
     }
 
+    public void requireAdmin(String authorizationHeader) {
+        String adminId = authorizationHeader.strip().split(" ")[1];
+        if (administratorRepository.findById(adminId).isEmpty()) {
+            throw new UnauthorizedRequestException("Only admins are allowed to perform this operation.");
+        }
+    }
+
     public boolean isAdmin(String authorizationHeader) {
         String adminId = authorizationHeader.split(" ")[1];
 

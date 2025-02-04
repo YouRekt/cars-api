@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +30,20 @@ public class LocationController {
     }
 
     @PostMapping
-    public ResponseEntity<LocationRespDTO> createLocation(@RequestBody LocationReqDTO dto) {
-        return ResponseEntity.ok(locationService.createLocation(dto));
+    public ResponseEntity<LocationRespDTO> createLocation(@RequestBody LocationReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        return ResponseEntity.ok(locationService.createLocation(dto, authorization));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LocationRespDTO> updateLocation(@PathVariable String id, @RequestBody LocationReqDTO dto) {
-        return locationService.updateLocation(id, dto)
+    public ResponseEntity<LocationRespDTO> updateLocation(@PathVariable String id, @RequestBody LocationReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        return locationService.updateLocation(id, dto, authorization)
                               .map(ResponseEntity::ok)
                               .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLocation(@PathVariable String id) {
-        locationService.deleteLocation(id);
+    public ResponseEntity<Void> deleteLocation(@PathVariable String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        locationService.deleteLocation(id, authorization);
         return ResponseEntity.noContent().build();
     }
 }

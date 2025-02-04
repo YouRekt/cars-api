@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,20 +34,20 @@ public class CarController {
     }
 
     @PostMapping
-    public ResponseEntity<CarRespDTO> createCar(@RequestBody CarReqDTO dto) {
-        return ResponseEntity.ok(carService.createCar(dto));
+    public ResponseEntity<CarRespDTO> createCar(@RequestBody CarReqDTO dto, @RequestHeader(name = "X-Auth") String authorization) {
+        return ResponseEntity.ok(carService.createCar(dto, authorization));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CarRespDTO> updateCar(@PathVariable String id, @RequestBody CarReqDTO dto) {
-        return carService.updateCar(id, dto)
+    public ResponseEntity<CarRespDTO> updateCar(@PathVariable String id, @RequestBody CarReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        return carService.updateCar(id, dto, authorization)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCar(@PathVariable String id) {
-        carService.deleteCar(id);
+    public ResponseEntity<Void> deleteCar(@PathVariable String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        carService.deleteCar(id, authorization);
         return ResponseEntity.noContent().build();
     }
 }

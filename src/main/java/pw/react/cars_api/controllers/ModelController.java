@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +31,20 @@ public class ModelController {
     }
 
     @PostMapping
-    public ResponseEntity<ModelRespDTO> createModel(@RequestBody ModelReqDTO dto) {
-        return ResponseEntity.ok(modelService.createModel(dto));
+    public ResponseEntity<ModelRespDTO> createModel(@RequestBody ModelReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        return ResponseEntity.ok(modelService.createModel(dto, authorization));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ModelRespDTO> updateModel(@PathVariable String id, @RequestBody ModelReqDTO dto) {
-        return modelService.updateModel(id, dto)
+    public ResponseEntity<ModelRespDTO> updateModel(@PathVariable String id, @RequestBody ModelReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        return modelService.updateModel(id, dto, authorization)
                            .map(ResponseEntity::ok)
                            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteModel(@PathVariable String id) {
-        modelService.deleteModel(id);
+    public ResponseEntity<Void> deleteModel(@PathVariable String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        modelService.deleteModel(id, authorization);
         return ResponseEntity.noContent().build();
     }
 }

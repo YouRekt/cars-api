@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
@@ -23,9 +24,9 @@ public class ImageController {
 
     // Add image
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Image> addImage(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Image> addImage(@RequestParam("file") MultipartFile file, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) throws IOException {
         byte[] imageData = file.getBytes();
-        Image savedImage = imageService.saveImage(imageData);
+        Image savedImage = imageService.saveImage(imageData, authorization);
         return new ResponseEntity<>(savedImage, HttpStatus.CREATED);
     }
 
@@ -40,8 +41,8 @@ public class ImageController {
 
     // Delete image by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteImageById(@PathVariable String id) {
-        imageService.deleteImageById(id);
+    public ResponseEntity<Void> deleteImageById(@PathVariable String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        imageService.deleteImageById(id, authorization);
         return ResponseEntity.noContent().build();
     }
 }

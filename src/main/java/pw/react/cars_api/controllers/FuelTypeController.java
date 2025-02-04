@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,13 @@ public class FuelTypeController {
     }
 
     @PostMapping
-    public ResponseEntity<FuelTypeRespDTO> addFuelType(@RequestBody FuelTypeReqDTO dto) {
-        return ResponseEntity.ok(fuelTypeService.addFuelType(dto));
+    public ResponseEntity<FuelTypeRespDTO> addFuelType(@RequestBody FuelTypeReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        return ResponseEntity.ok(fuelTypeService.addFuelType(dto, authorization));
     }
 
     @DeleteMapping("/{type}")
-    public ResponseEntity<Void> deleteFuelTypeByName(@PathVariable String type) {
-        fuelTypeService.deleteFuelType(type);
+    public ResponseEntity<Void> deleteFuelTypeByName(@PathVariable String type, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        fuelTypeService.deleteFuelType(type, authorization);
         return ResponseEntity.noContent().build();
     }
 }
