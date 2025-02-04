@@ -3,6 +3,7 @@ package pw.react.cars_api.controllers;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import pw.react.cars_api.data_transfer_objects.AdministratorDTO;
 import pw.react.cars_api.models.Administrator;
 import pw.react.cars_api.services.AdministratorService;
+import pw.react.cars_api.utils.UnauthorizedRequestException;
 
 import java.net.URI;
-import java.util.Optional;
 
-//@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/administrators")
 public class AdministratorController {
@@ -29,13 +29,13 @@ public class AdministratorController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Void> registerAdministrator(@Valid @RequestBody AdministratorDTO administratorDTO, BindingResult bindingResult) {
+    public ResponseEntity<Void> registerAdministrator(@Valid @RequestBody AdministratorDTO administratorDTO, BindingResult bindingResult, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         if (bindingResult.hasErrors()) {
             logger.error("Register Validation Error: {}", bindingResult.getAllErrors());
             return ResponseEntity.badRequest().build();
         }
         try {
-            String administratorId = administratorService.registerAdministrator(administratorDTO);
+            String administratorId = administratorService.registerAdministrator(administratorDTO, authorization);
             URI location = URI.create("/administrators/" + administratorId);
             logger.info("Administrator registered with ID: {}", administratorId);
             return ResponseEntity.created(location).build();
@@ -62,17 +62,40 @@ public class AdministratorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getAdministrator(@PathVariable String id) {
-        Optional<Administrator> administratorOptional = administratorService.getAdministratorById(id);
-        logger.info("Administrator \"{}\" requested", administratorOptional.map(Administrator::getUsername).orElse("Administrator not found"));
-        String response = administratorOptional.map(Administrator::getUsername).orElse("Administrator not found");
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<String> getAdministrator(@PathVariable String id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        try {
+            Administrator administrator = administratorService.getAdministratorById(id, authorization);
+            logger.info("Administrator \"{}\" requested", administrator);
+            return ResponseEntity.ok().body(administrator.getUsername());
+
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized get admin Request: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            logger.error("Get Administrator Error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<Page<Administrator>> getAllAdministrators(@RequestParam("page") int page, @RequestParam("size") int size, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+        try {
+            Page<Administrator> administratorPage = administratorService.getAllAdministrators(authorization, page, size);
+            logger.info("Administrators list page {} requested", page);
+            return ResponseEntity.ok().body(administratorPage);
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized get all admins Request: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            logger.error("Get All Administrators Error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAdministrator(@PathVariable String id) {
+    public ResponseEntity<Void> deleteAdministrator(@PathVariable String id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         try {
-            administratorService.deleteAdministrator(id);
+            administratorService.deleteAdministrator(id, authorization);
             logger.info("Administrator \"{}\" deleted", id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
