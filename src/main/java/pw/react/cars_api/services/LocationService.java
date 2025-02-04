@@ -11,16 +11,18 @@ import pw.react.cars_api.data_transfer_objects.LocationReqDTO;
 import pw.react.cars_api.data_transfer_objects.LocationRespDTO;
 import pw.react.cars_api.models.Location;
 import pw.react.cars_api.repositories.LocationRepository;
+import pw.react.cars_api.utils.Authorization;
 
 @Service
 public class LocationService {
 
     private final LocationRepository locationRepository;
-
+    private final Authorization auth;
     private final GeometryFactory geometryFactory = new GeometryFactory();
 
-    public LocationService(LocationRepository locationRepository) {
+    public LocationService(LocationRepository locationRepository, Authorization auth) {
         this.locationRepository = locationRepository;
+        this.auth = auth;
     }
 
     public List<LocationRespDTO> getAllLocations() {
@@ -34,7 +36,8 @@ public class LocationService {
     }
 
     @Transactional
-    public LocationRespDTO createLocation(LocationReqDTO dto) {
+    public LocationRespDTO createLocation(LocationReqDTO dto, String authToken) {
+        auth.requireAdmin(authToken);
         Point coordinates = geometryFactory.createPoint(new org.locationtech.jts.geom.Coordinate(dto.latitude(), dto.longitude()));
 
         Location location = new Location();
@@ -53,7 +56,8 @@ public class LocationService {
     }
 
     @Transactional
-    public Optional<LocationRespDTO> updateLocation(String id, LocationReqDTO dto) {
+    public Optional<LocationRespDTO> updateLocation(String id, LocationReqDTO dto, String authToken) {
+        auth.requireAdmin(authToken);
         return locationRepository.findById(id).map(location -> {
             Point coordinates = geometryFactory.createPoint(new org.locationtech.jts.geom.Coordinate(dto.latitude(), dto.longitude()));
 
@@ -62,7 +66,8 @@ public class LocationService {
     }
 
     @Transactional
-    public void deleteLocation(String id) {
+    public void deleteLocation(String id, String authToken) {
+        auth.requireAdmin(authToken);
         if (!locationRepository.existsById(id)) {
             throw new RuntimeException("Location not found");
         }

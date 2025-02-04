@@ -7,6 +7,7 @@ import pw.react.cars_api.data_transfer_objects.FuelTypeReqDTO;
 import pw.react.cars_api.data_transfer_objects.FuelTypeRespDTO;
 import pw.react.cars_api.models.FuelType;
 import pw.react.cars_api.repositories.FuelTypeRepository;
+import pw.react.cars_api.utils.Authorization;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,10 @@ import java.util.Optional;
 public class FuelTypeService {
 
     private final FuelTypeRepository fuelTypeRepository;
-
-    public FuelTypeService(FuelTypeRepository fuelTypeRepository) {
+    private final Authorization auth;
+    public FuelTypeService(FuelTypeRepository fuelTypeRepository, Authorization auth) {
         this.fuelTypeRepository = fuelTypeRepository;
+        this.auth = auth;
     }
 
     public List<FuelTypeRespDTO> getAllFuelTypes() {
@@ -27,14 +29,16 @@ public class FuelTypeService {
     }
 
     @Transactional
-    public FuelTypeRespDTO addFuelType(FuelTypeReqDTO dto) {
+    public FuelTypeRespDTO addFuelType(FuelTypeReqDTO dto, String authToken) {
+        auth.requireAdmin(authToken);
         FuelType fuelType = new FuelType();
         fuelType.setType(dto.type());
         return new FuelTypeRespDTO(fuelTypeRepository.save(fuelType));
     }
 
     @Transactional
-    public void deleteFuelType(String type) {
+    public void deleteFuelType(String type, String authToken) {
+        auth.requireAdmin(authToken);
         Optional<FuelType> fuelType = fuelTypeRepository.findByType(type);
         fuelType.ifPresent(fuelTypeRepository::delete);
     }

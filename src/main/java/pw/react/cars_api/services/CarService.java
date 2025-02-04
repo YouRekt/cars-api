@@ -13,6 +13,7 @@ import pw.react.cars_api.repositories.CarRepository;
 import pw.react.cars_api.repositories.ImageRepository;
 import pw.react.cars_api.repositories.LocationRepository;
 import pw.react.cars_api.repositories.ModelRepository;
+import pw.react.cars_api.utils.Authorization;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +29,13 @@ public class CarService {
     private final LocationRepository locationRepository;
 
     private final ImageRepository imageRepository;
-
-    public CarService(CarRepository carRepository, ModelRepository modelRepository, LocationRepository locationRepository, ImageRepository imageRepository) {
+    private final Authorization auth;
+    public CarService(CarRepository carRepository, ModelRepository modelRepository, LocationRepository locationRepository, ImageRepository imageRepository, Authorization auth) {
         this.carRepository = carRepository;
         this.modelRepository = modelRepository;
         this.locationRepository = locationRepository;
         this.imageRepository = imageRepository;
+        this.auth = auth;
     }
 
     public List<CarRespDTO> getAllCars() {
@@ -47,7 +49,8 @@ public class CarService {
     }
 
     @Transactional
-    public CarRespDTO createCar(CarReqDTO dto) {
+    public CarRespDTO createCar(CarReqDTO dto, String authToken) {
+        auth.requireAdmin(authToken);
         Model model = modelRepository.findById(dto.modelId())
                 .orElseThrow(() -> new RuntimeException("Model not found"));
         Location location = locationRepository.findById(dto.locationId())
@@ -63,7 +66,8 @@ public class CarService {
     }
 
     @Transactional
-    public Optional<CarRespDTO> updateCar(String id, CarReqDTO dto) {
+    public Optional<CarRespDTO> updateCar(String id, CarReqDTO dto, String authToken) {
+        auth.requireAdmin(authToken);
         return carRepository.findById(id).map(car -> {
             Model model = modelRepository.findById(dto.modelId())
                     .orElseThrow(() -> new RuntimeException("Model not found"));
@@ -80,7 +84,8 @@ public class CarService {
     }
 
     @Transactional
-    public void deleteCar(String id) {
+    public void deleteCar(String id, String authToken) {
+        auth.requireAdmin(authToken);
         if (!carRepository.existsById(id)) {
             throw new RuntimeException("Car not found");
         }

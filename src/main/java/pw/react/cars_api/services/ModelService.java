@@ -11,6 +11,8 @@ import pw.react.cars_api.models.Model;
 import pw.react.cars_api.repositories.BrandRepository;
 import pw.react.cars_api.repositories.FuelTypeRepository;
 import pw.react.cars_api.repositories.ModelRepository;
+import pw.react.cars_api.utils.Authorization;
+import pw.react.cars_api.utils.UnauthorizedRequestException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,14 +21,20 @@ import java.util.stream.Collectors;
 @Service
 public class ModelService {
 
-    @Autowired
-    private ModelRepository modelRepository;
+    private final ModelRepository modelRepository;
 
-    @Autowired
-    private BrandRepository brandRepository;
+    private final BrandRepository brandRepository;
 
-    @Autowired
-    private FuelTypeRepository fuelTypeRepository;
+    private final FuelTypeRepository fuelTypeRepository;
+
+    private final Authorization auth;
+
+    public ModelService(ModelRepository modelRepository, BrandRepository brandRepository, FuelTypeRepository fuelTypeRepository, Authorization auth) {
+        this.modelRepository = modelRepository;
+        this.brandRepository = brandRepository;
+        this.fuelTypeRepository = fuelTypeRepository;
+        this.auth = auth;
+    }
 
     public List<ModelRespDTO> getAllModels() {
         return modelRepository.findAll().stream()
@@ -39,7 +47,8 @@ public class ModelService {
     }
 
     @Transactional
-    public ModelRespDTO createModel(ModelReqDTO dto) {
+    public ModelRespDTO createModel(ModelReqDTO dto, String authToken) {
+        auth.requireAdmin(authToken);
         Brand brand = brandRepository.findById(dto.brandId())
                                      .orElseThrow(() -> new RuntimeException("Brand not found"));
         FuelType fuelType = fuelTypeRepository.findById(dto.fuelTypeId())
@@ -63,7 +72,8 @@ public class ModelService {
     }
 
     @Transactional
-    public Optional<ModelRespDTO> updateModel(String id, ModelReqDTO dto) {
+    public Optional<ModelRespDTO> updateModel(String id, ModelReqDTO dto, String authToken) {
+        auth.requireAdmin(authToken);
         return modelRepository.findById(id).map(model -> {
             Brand brand = brandRepository.findById(dto.brandId())
                                          .orElseThrow(() -> new RuntimeException("Brand not found"));
@@ -75,7 +85,8 @@ public class ModelService {
     }
 
     @Transactional
-    public void deleteModel(String id) {
+    public void deleteModel(String id, String authToken) {
+        auth.requireAdmin(authToken);
         if (!modelRepository.existsById(id)) {
             throw new RuntimeException("Model not found");
         }
