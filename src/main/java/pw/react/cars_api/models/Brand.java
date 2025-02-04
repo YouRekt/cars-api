@@ -13,7 +13,7 @@ public class Brand {
     @Column(unique = true)
     private String name;
 
-    @Column(unique = true)
+    @Column(name = "short_name", unique = true)
     private String shortName;
 
     public Long getId() {
