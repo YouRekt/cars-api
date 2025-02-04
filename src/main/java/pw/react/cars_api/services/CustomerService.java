@@ -73,4 +73,17 @@ public class CustomerService {
 
         return customerRepository.findAll(PageRequest.of(page, size));
     }
+
+    @Transactional
+    public void deleteCustomer(String customerId, String authorization) {
+        if (!auth.isAdmin(authorization)) {
+            throw new UnauthorizedRequestException("Unauthorized access");
+        }
+
+        if(!customerRepository.existsById(customerId)) {
+            throw new IllegalArgumentException("Customer not found");
+        }
+
+        customerRepository.deleteById(customerId);
+    }
 }

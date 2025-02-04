@@ -92,4 +92,19 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable("id") String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
+        try {
+            customerService.deleteCustomer(id, authorization);
+            logger.info("Customer {} deleted", id);
+            return ResponseEntity.ok().build();
+        } catch (UnauthorizedRequestException e) {
+            logger.error("Unauthorized delete request {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            logger.error("Error deleting customer {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
 }
