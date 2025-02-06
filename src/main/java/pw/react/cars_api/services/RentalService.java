@@ -76,7 +76,26 @@ public class RentalService {
 
         Customer customer = auth.authorize(authorization);
 
-        return rentalRepository.findByCustomer(customer, PageRequest.of(pageNumber, pageSize));
+        return rentalRepository.findNonCancelledByCustomer(customer, PageRequest.of(pageNumber, pageSize));
+    }
+
+    @Transactional
+    public void cancelRental(String id, String authorization) {
+        if (auth.isAdmin(authorization)) {
+            if (!rentalRepository.existsById(id)) {
+                throw new IllegalArgumentException("Rental does not exist");
+            }
+            rentalRepository.cancelById(id);
+            return;
+        }
+
+        Customer customer = auth.authorize(authorization);
+
+        if (!rentalRepository.existsByIdAndCustomer(id, customer)) {
+            throw new IllegalArgumentException("Rental not found");
+        }
+
+        rentalRepository.cancelByIdAndCustomer(id, customer);
     }
 
     @Transactional

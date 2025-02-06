@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class CustomerController {
     }
 
     @PostMapping("/")
+    @Operation(summary = "Register new customer.")
     public ResponseEntity<Void> createCustomer(@Valid @RequestBody CustomerDTO customerDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.error("Register Validation Error: {}", bindingResult.getAllErrors());
@@ -47,6 +49,7 @@ public class CustomerController {
     }
 
     @PostMapping("/external")
+    @Operation(summary = "Register new external customer.")
     public ResponseEntity<Void> createExternalCustomer(@Valid @RequestBody CustomerDTO customerDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.error("External Register Validation Error: {}", bindingResult.getAllErrors());
@@ -64,6 +67,7 @@ public class CustomerController {
     }
 
     @PutMapping("/login")
+    @Operation(summary = "Log into customer account.")
     public ResponseEntity<Void> loginCustomer(@Valid @RequestBody CustomerDTO customerDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.error("Login Validation Error: {}", bindingResult.getAllErrors());
@@ -80,6 +84,7 @@ public class CustomerController {
     }
 
     @GetMapping("/")
+    @Operation(summary = "List all customers.")
     public ResponseEntity<Page<Customer>> getAllCustomers(@RequestParam("page") int page, @RequestParam("size") int size, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         try {
             Page<Customer> customerPage = customerService.getAllCustomers(page, size, authorization);
@@ -95,6 +100,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Modify customer data.")
     public ResponseEntity<Void> editCustomer(@Valid @RequestBody CustomerDTO customerDTO, @PathVariable String id, BindingResult bindingResult, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         if (bindingResult.hasErrors()) {
             logger.error("Edit Customer Validation Error: {}", bindingResult.getAllErrors());
@@ -115,6 +121,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a customer data.")
     public ResponseEntity<Void> deleteCustomer(@PathVariable("id") String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         try {
             customerService.deleteCustomer(id, authorization);

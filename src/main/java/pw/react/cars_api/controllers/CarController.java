@@ -1,8 +1,10 @@
 package pw.react.cars_api.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import pw.react.cars_api.data_transfer_objects.CarRespDTO;
 import pw.react.cars_api.services.CarService;
 
 import java.math.BigDecimal;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +27,8 @@ public class CarController {
         this.carService = carService;
     }
 
-    @GetMapping
-    public Page<CarRespDTO> getAllCars(Pageable page) {
-        return carService.getAllCars(page);
-    }
-
-    @GetMapping("/search")
+    @GetMapping("/")
+    @Operation(summary = "Get a page of cars as per the filters.")
     public Page<CarRespDTO> searchCars(@RequestParam Optional<String> brandName,
                                        @RequestParam Optional<String> modelName,
                                        @RequestParam Optional<Long> productionYear,
@@ -43,18 +42,21 @@ public class CarController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get car by id.")
     public ResponseEntity<CarRespDTO> getCarById(@PathVariable String id) {
         return carService.getCarById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/")
+    @Operation(summary = "Create new car.")
     public ResponseEntity<CarRespDTO> createCar(@RequestBody CarReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         return ResponseEntity.ok(carService.createCar(dto, authorization));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Modify car data.")
     public ResponseEntity<CarRespDTO> updateCar(@PathVariable String id, @RequestBody CarReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         return carService.updateCar(id, dto, authorization)
                 .map(ResponseEntity::ok)
@@ -62,8 +64,11 @@ public class CarController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete car by id.")
     public ResponseEntity<Void> deleteCar(@PathVariable String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
-        carService.deleteCar(id, authorization);
+        if (!carService.deleteCar(id, authorization)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
         return ResponseEntity.noContent().build();
     }
 }

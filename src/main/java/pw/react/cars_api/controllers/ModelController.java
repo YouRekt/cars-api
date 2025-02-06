@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -18,24 +19,28 @@ public class ModelController {
     @Autowired
     private ModelService modelService;
 
-    @GetMapping
+    @GetMapping("/")
+    @Operation(summary = "List all models.")
     public List<ModelRespDTO> getAllModels() {
         return modelService.getAllModels();
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get model by id.")
     public ResponseEntity<ModelRespDTO> getModelById(@PathVariable String id) {
         return modelService.getModelById(id)
                            .map(ResponseEntity::ok)
                            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/")
+    @Operation(summary = "Create new model.")
     public ResponseEntity<ModelRespDTO> createModel(@RequestBody ModelReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         return ResponseEntity.ok(modelService.createModel(dto, authorization));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Modify model data.")
     public ResponseEntity<ModelRespDTO> updateModel(@PathVariable String id, @RequestBody ModelReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         return modelService.updateModel(id, dto, authorization)
                            .map(ResponseEntity::ok)
@@ -43,6 +48,7 @@ public class ModelController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete model by id.")
     public ResponseEntity<Void> deleteModel(@PathVariable String id, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         modelService.deleteModel(id, authorization);
         return ResponseEntity.noContent().build();

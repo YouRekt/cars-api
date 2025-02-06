@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -12,11 +13,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/flatly")
 public class FlatController {
-
     private final WebClient webClient;
 
     public FlatController(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://3.67.172.45:8080/").build();
+        this.webClient = webClientBuilder.baseUrl(System.getenv("API_FLATLY")).build();
     }
 
     @RequestMapping(value = "/{*endpoint}", method = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE})

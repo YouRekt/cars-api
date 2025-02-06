@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +21,20 @@ public class FuelTypeController {
         this.fuelTypeService = fuelTypeService;
     }
 
-    @GetMapping
+    @GetMapping("/")
+    @Operation(summary = "List all fuel types.")
     public List<FuelTypeRespDTO> getAllFuelTypes() {
         return fuelTypeService.getAllFuelTypes();
     }
 
-    @PostMapping
+    @PostMapping("/")
+    @Operation(summary = "Add new fuel type.")
     public ResponseEntity<FuelTypeRespDTO> addFuelType(@RequestBody FuelTypeReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         return ResponseEntity.ok(fuelTypeService.addFuelType(dto, authorization));
     }
 
     @DeleteMapping("/{type}")
+    @Operation(summary = "Delete fuel type by name.")
     public ResponseEntity<Void> deleteFuelTypeByName(@PathVariable String type, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         fuelTypeService.deleteFuelType(type, authorization);
         return ResponseEntity.noContent().build();

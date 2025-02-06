@@ -1,5 +1,6 @@
 package pw.react.cars_api.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class AdministratorController {
     }
 
     @PostMapping("/")
+    @Operation(summary = "Register new administrator.")
     public ResponseEntity<Void> registerAdministrator(@Valid @RequestBody AdministratorDTO administratorDTO, BindingResult bindingResult, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         if (bindingResult.hasErrors()) {
             logger.error("Register Validation Error: {}", bindingResult.getAllErrors());
@@ -46,6 +48,7 @@ public class AdministratorController {
     }
 
     @PutMapping("/")
+    @Operation(summary = "Log into administrator account.")
     public ResponseEntity<Void> loginAdministrator(@Valid @RequestBody AdministratorDTO administratorDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.error("Login Validation Error: {}", bindingResult.getAllErrors());
@@ -62,12 +65,12 @@ public class AdministratorController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get administrator's data by id")
     public ResponseEntity<String> getAdministrator(@PathVariable String id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         try {
             Administrator administrator = administratorService.getAdministratorById(id, authorization);
             logger.info("Administrator \"{}\" requested", administrator);
             return ResponseEntity.ok().body(administrator.getUsername());
-
         } catch (UnauthorizedRequestException e) {
             logger.error("Unauthorized get admin Request: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -78,6 +81,7 @@ public class AdministratorController {
     }
 
     @GetMapping("/")
+    @Operation(summary = "List all administrators.")
     public ResponseEntity<Page<Administrator>> getAllAdministrators(@RequestParam("page") int page, @RequestParam("size") int size, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         try {
             Page<Administrator> administratorPage = administratorService.getAllAdministrators(authorization, page, size);
@@ -93,6 +97,7 @@ public class AdministratorController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete administrator.")
     public ResponseEntity<Void> deleteAdministrator(@PathVariable String id, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         try {
             administratorService.deleteAdministrator(id, authorization);

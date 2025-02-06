@@ -21,6 +21,7 @@ import pw.react.cars_api.utils.Authorization;
 import pw.react.cars_api.utils.Authorization;
 
 import java.math.BigDecimal;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,12 +35,15 @@ public class CarService {
 
     private final LocationRepository locationRepository;
 
+    private final RentalRepository rentalRepository;
+
     private final ImageRepository imageRepository;
     private final Authorization auth;
-    public CarService(CarRepository carRepository, ModelRepository modelRepository, LocationRepository locationRepository, ImageRepository imageRepository, Authorization auth) {
+    public CarService(CarRepository carRepository, ModelRepository modelRepository, LocationRepository locationRepository, RentalRepository rentalRepository, ImageRepository imageRepository, Authorization auth) {
         this.carRepository = carRepository;
         this.modelRepository = modelRepository;
         this.locationRepository = locationRepository;
+        this.rentalRepository = rentalRepository;
         this.imageRepository = imageRepository;
         this.auth = auth;
     }
@@ -100,11 +104,15 @@ public class CarService {
     }
 
     @Transactional
-    public void deleteCar(String id, String authToken) {
+    public boolean deleteCar(String id, String authToken) {
         auth.requireAdmin(authToken);
         if (!carRepository.existsById(id)) {
             throw new RuntimeException("Car not found");
         }
+        if (rentalRepository.existsByCar_Id(id)) {
+            return false;
+        }
         carRepository.deleteById(id);
+        return true;
     }
 }
