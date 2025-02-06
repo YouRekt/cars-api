@@ -14,6 +14,7 @@ import pw.react.cars_api.services.CarService;
 
 import java.math.BigDecimal;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,8 +38,18 @@ public class CarController {
                                        @RequestParam Optional<Long> seatCount,
                                        @RequestParam Optional<Long> doorCount,
                                        @RequestParam Optional<BigDecimal> dailyRate,
+                                       @RequestParam Optional<String> city,
+                                       @RequestParam Optional<BigDecimal> distance,
+                                       @RequestParam Optional<String> from, @RequestParam Optional<String> to,
+                                       @RequestHeader(name="X-Coordinates",required = false) Optional<String> xycoords,
                                        Pageable pageable) {
-        return carService.searchCars(brandName, modelName, productionYear, fuelType, fuelCapacity, seatCount, doorCount, dailyRate, pageable);
+        Optional<BigDecimal> xpos = Optional.empty(),ypos = Optional.empty();
+        if (xycoords.isPresent()) {
+            var sp = xycoords.get().split(":");
+            xpos = Optional.of(BigDecimal.valueOf(Double.parseDouble(sp[0])));
+            ypos = Optional.of(BigDecimal.valueOf(Double.parseDouble(sp[1])));
+        }
+        return carService.searchCars(brandName, modelName, productionYear, fuelType, fuelCapacity, seatCount, doorCount, dailyRate, city, xpos, ypos, distance, from, to, pageable);
     }
 
     @GetMapping("/{id}")

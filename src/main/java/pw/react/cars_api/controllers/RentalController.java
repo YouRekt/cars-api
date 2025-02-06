@@ -41,7 +41,7 @@ public class RentalController {
             logger.error("Unauthorized create rental request {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            logger.error("Error creating rental {}", rentalDTO);
+            logger.error("Error creating rental {}: {}", rentalDTO, e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
@@ -74,7 +74,7 @@ public class RentalController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error getting rental list {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

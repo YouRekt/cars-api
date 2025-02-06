@@ -22,6 +22,7 @@ import pw.react.cars_api.utils.Authorization;
 
 import java.math.BigDecimal;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,12 +55,16 @@ public class CarService {
     }
 
     public Page<CarRespDTO> searchCars(Optional<String> brandName, Optional<String> modelName,
-                                Optional<Long> productionYear, Optional<String> fuelType,
-                                Optional<Long> fuelCapacity, Optional<Long> seatCount,
-                                Optional<Long> doorCount, Optional<BigDecimal> dailyRate,
-                                Pageable pageable) {
+                                       Optional<Long> productionYear, Optional<String> fuelType,
+                                       Optional<Long> fuelCapacity, Optional<Long> seatCount,
+                                       Optional<Long> doorCount, Optional<BigDecimal> dailyRate,
+                                       Optional<String> locationId,
+                                       Optional<BigDecimal> xpos, Optional<BigDecimal> ypos,
+                                       Optional<BigDecimal> distance,
+                                       Optional<String> from, Optional<String> to,
+                                       Pageable pageable) {
         Specification<Car> spec = CarSpecifications.filterByModelAttributes(
-                brandName, modelName, productionYear, fuelType, fuelCapacity, seatCount, doorCount, dailyRate);
+                brandName, modelName, productionYear, fuelType, fuelCapacity, seatCount, doorCount, dailyRate, locationId, xpos, ypos, distance, from, to);
         return carRepository.findAll(spec, pageable)
                 .map(CarRespDTO::new);
     }

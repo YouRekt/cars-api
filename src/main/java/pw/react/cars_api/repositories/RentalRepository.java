@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RentalRepository extends JpaRepository<Rental, String> {
+    @Query(value = "SELECT case when (count(*) > 0) then true else false end FROM Rental r WHERE r.car = :car AND r.isCancelled = false AND r.startAt<:startAtBefore AND r.endAt<:endAtAfter")
     boolean existsByCarAndStartAtBeforeAndEndAtAfter(Car car, Date startAtBefore, Date endAtAfter);
+
     boolean existsByCar_Id(String car);
     Optional<Rental> findByCustomerAndId(Customer customer, String id);
     Page<Rental> findByCustomer(Customer customer, Pageable pageable);

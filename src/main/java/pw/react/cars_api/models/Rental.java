@@ -1,9 +1,8 @@
 package pw.react.cars_api.models;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.util.Date;
 
@@ -33,11 +32,8 @@ public class Rental {
     private Date endAt;
 
     @Column
+    @ColumnDefault("false")
     private boolean isCancelled;
-
-    @Formula("timestampdiff(HOUR,`end_at`,`start_at`) / 24")
-    @Column(insertable = true,updatable = false)
-    private Integer daysRented;
 
     public String getId() {
         return id;
@@ -85,9 +81,5 @@ public class Rental {
 
     public void setCancelled(boolean cancelled) {
         isCancelled = cancelled;
-    }
-
-    public int getDaysRented() {
-        return daysRented;
     }
 }
