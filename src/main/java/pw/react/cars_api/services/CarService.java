@@ -103,7 +103,7 @@ public class CarService {
             car.setModel(model);
             car.setLocation(location);
             car.setImage(image);
-
+            carRepository.save(car);
             return new CarRespDTO(carRepository.save(car));
         });
     }

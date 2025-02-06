@@ -45,7 +45,7 @@ public class CarController {
                                        Pageable pageable) {
         Optional<BigDecimal> xpos = Optional.empty(),ypos = Optional.empty();
         if (xycoords.isPresent()) {
-            var sp = xycoords.get().split(":");
+            var sp = xycoords.get().split(";");
             xpos = Optional.of(BigDecimal.valueOf(Double.parseDouble(sp[0])));
             ypos = Optional.of(BigDecimal.valueOf(Double.parseDouble(sp[1])));
         }
@@ -71,7 +71,7 @@ public class CarController {
     public ResponseEntity<CarRespDTO> updateCar(@PathVariable String id, @RequestBody CarReqDTO dto, @RequestHeader(name = HttpHeaders.AUTHORIZATION) String authorization) {
         return carService.updateCar(id, dto, authorization)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.internalServerError().build());
     }
 
     @DeleteMapping("/{id}")
