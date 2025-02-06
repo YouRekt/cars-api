@@ -6,6 +6,7 @@ import pw.react.cars_api.models.Image;
 import pw.react.cars_api.repositories.ImageRepository;
 import pw.react.cars_api.utils.Authorization;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,6 +31,10 @@ public class ImageService {
     // Get an image by ID
     public Optional<Image> getImageById(String id) {
         return imageRepository.findById(id);
+    }
+
+    public List<Image> getAllImages() {
+        return imageRepository.findAll();
     }
 
     // Delete image by ID
